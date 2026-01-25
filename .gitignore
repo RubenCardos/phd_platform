@@ -1,4 +1,4 @@
-dags/*
-logs/*
-config/*
-plugins/*
+dags
+logs
+config
+plugins
