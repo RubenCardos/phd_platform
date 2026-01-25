@@ -1,4 +1,4 @@
-#  Worklfows for Automated Experimentation Platform
+# Automated Experimentation Platform
 
 ## Table of contents
 
