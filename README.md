@@ -57,7 +57,7 @@ To user MLFlow:
 
 ### Examples of use
 
-If you want examples of real-world use of the platform, such as orchestrating an experiment in a workflow/DAGs, Python scripts, and connecting to MLFlow to send and save results, download repository X in the “DAGs” directory, which contains several examples of real-world use of the platform.
+If you want examples of real-world use of the platform, such as orchestrating an experiment in a workflow/DAGs, Python scripts, and connecting to MLFlow to send and save results, download the following repository https://github.com/RubenCardos/phd_workflows in the “DAGs” directory, which contains several examples of real-world use of the platform.
 
 * elastic_patterns_experiment_1.py : Experiment to classify handwritten numbers, MNIST dataset, and storage results in MLFlow.
 * elastic_patterns_experiment_1_versioning.py : Same as experiment 1, but using a code repository to storage the source code of experiment since the platform have a source version control (git) tool.
