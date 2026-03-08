@@ -1,11 +1,7 @@
 ---
 x-airflow-common:
   &airflow-common
-  # In order to add custom dependencies or upgrade provider packages you can use your extended image.
-  # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
-  # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.10.2}
-  # build: .
+  # image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.10.2}
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -16,17 +12,9 @@ x-airflow-common:
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
-    # yamllint disable rule:line-length
-    # Use simple http server on scheduler for health checks
-    # See https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/logging-monitoring/check-health.html#scheduler-health-check-server
-    # yamllint enable rule:line-length
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
-    # WARNING: Use _PIP_ADDITIONAL_REQUIREMENTS option ONLY for a quick checks
-    # for other purpose (development, test and especially production usage) build/extend Airflow image.
+    AIRFLOW__WEBSERVER__SHOW_TRIGGER_FORM_IF_NO_PARAMS: 'true'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:- mlflow}
-    # The following line can be used to set a custom config file, stored in the local config folder
-    # If you want to use it, outcomment it and replace airflow.cfg with the name of your config file
-    # AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
@@ -79,7 +67,11 @@ services:
 
   airflow-webserver:
     <<: *airflow-common
-    command: webserver
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: custom-airflow:2.10.2
+    command: airflow webserver
     ports:
       - "8080:8080"
     healthcheck:
@@ -96,7 +88,11 @@ services:
 
   airflow-scheduler:
     <<: *airflow-common
-    command: scheduler
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: custom-airflow:2.10.2
+    command: airflow scheduler
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
       interval: 30s
@@ -111,9 +107,12 @@ services:
 
   airflow-worker:
     <<: *airflow-common
-    command: celery worker
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: custom-airflow:2.10.2
+    command: airflow celery worker
     healthcheck:
-      # yamllint disable rule:line-length
       test:
         - "CMD-SHELL"
         - 'celery --app airflow.providers.celery.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}" || celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"'
@@ -123,8 +122,6 @@ services:
       start_period: 30s
     environment:
       <<: *airflow-common-env
-      # Required to handle warm shutdown of the celery workers properly
-      # See https://airflow.apache.org/docs/docker-stack/entrypoint.html#signal-propagation
       DUMB_INIT_SETSID: "0"
     restart: always
     depends_on:
@@ -134,7 +131,11 @@ services:
 
   airflow-triggerer:
     <<: *airflow-common
-    command: triggerer
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: custom-airflow:2.10.2
+    command: airflow triggerer
     healthcheck:
       test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
       interval: 30s
@@ -149,8 +150,11 @@ services:
 
   airflow-init:
     <<: *airflow-common
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: custom-airflow:2.10.2
     entrypoint: /bin/bash
-    # yamllint disable rule:line-length
     command:
       - -c
       - |
@@ -198,8 +202,8 @@ services:
         fi
         mkdir -p /sources/logs /sources/dags /sources/plugins
         chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins}
+        echo "Installing git " && apt-get update && apt-get install -y git 
         exec /entrypoint airflow version
-    # yamllint enable rule:line-length
     environment:
       <<: *airflow-common-env
       _AIRFLOW_DB_MIGRATE: 'true'
@@ -213,6 +217,10 @@ services:
 
   airflow-cli:
     <<: *airflow-common
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: custom-airflow:2.10.2
     profiles:
       - debug
     environment:
@@ -222,11 +230,7 @@ services:
     command:
       - bash
       - -c
-      - airflow
-
-  # You can enable flower by adding "--profile flower" option e.g. docker-compose --profile flower up
-  # or by explicitly targeted on the command line e.g. docker-compose up flower.
-  # See: https://docs.docker.com/compose/profiles/
+      - apt-get update && apt-get install -y git && airflow
   flower:
     <<: *airflow-common
     command: celery flower
