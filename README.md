@@ -32,7 +32,7 @@ Follogin image presents a schematic representation of the platform architecture 
 To deploy the platform, execute the following command in the same directory atTo deploy the platform, run the command shown below where the compose.yml file is located.
 
 ```bash
-docker compose up
+docker-compose up --build
 ```
 
 This command will deploy all the Docker containers needed to use the platform, which mainly consists of Airflow as the orchestrator (made up of different containers to deploy all its functionality) and MLFlow as the Model/Experiment Registry. 
