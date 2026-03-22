@@ -23,9 +23,34 @@ src
 
 ## Platform Architecture
 
-Follogin image presents a schematic representation of the platform architecture and illustrates the interaction between modules within the automated experimentation ecosystem.
+Following image presents a schematic representation of the platform architecture and illustrates the interaction between modules within the automated experimentation ecosystem.
 
 ![Graphical representation of the platform architecture](doc/images/PlatformArq.PNG)
+
+### Services orchestrated with Docker Compose
+
+The platform orchestrates the following services using Docker Compose:
+
+1. **Airflow**:
+* Description: A workflow orchestrator for complex workflows, it is a custom image with several dependencies already included, such as Git and MLFlow. 
+* Exposed Port: 8080
+* Build: Built from the Dockerfile located in the root directory.
+* Dependencies: This service consists of multiple services/containers, which make up the various common modules of Airflow:
+  * **postgres**: Database container that stores metadata, DAG states, and task information.
+  * **flower**: Provides a web-based monitoring tool for Celery (as integrated library within Airflow) workers and task queues.
+  * **redis**: Acts as a message broker for Celery (for Celery Executor), enabling communication between scheduler and workers.
+  * **airflow-webserver**: Hosts the web UI where users can monitor, trigger, and manage workflows (DAGs).
+  * **airflow-scheduler**: Responsible for scheduling tasks and triggering DAG runs based on defined intervals and dependencies.
+  * **airflow-worker**: Executes the tasks assigned by the scheduler
+  * **airflow-triggerer**: Handles deferred and asynchronous tasks, improving efficiency for long-running operations.
+  * **airflow-init**: Initializes the environment, sets up the database, and creates the initial user.
+  * **airflow-cli**: A lightweight utility container used to run Airflow CLI commands interactively or on demand, sharing the same environment as other Airflow services.
+
+2. **Mlflow**:
+* Description: Experiment tracking and evaluation store. Allos to easily stored results and compare results
+* Exposed Port: 5050
+* Build: Built from the Dockerfile located in the /mlflow directory.
+
 
 ## How To Use
 
