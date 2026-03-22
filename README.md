@@ -3,7 +3,7 @@
 ## Table of contents
 
 1. [Project Structure](#project-structure)
-1. [How to use](#how-to-use)
+2. [How to use](#how-to-use)
 
 ## Project Structure
 The repository is organized as follows:
@@ -32,10 +32,16 @@ Follogin image presents a schematic representation of the platform architecture 
 To deploy the platform, execute the following command in the same directory atTo deploy the platform, run the command shown below where the compose.yml file is located.
 
 ```bash
-docker-compose up --build
+docker-compose up --build -d
 ```
+This command reads the Compose specification and instantiates all required services, creating and orchestrating the corresponding containers, parameter description:
+
+* --build: Rebuild the Docker images being used in the compose.yml file
+* -d: Unattended mode, the terminal is not locked using the standard Eocker exit
 
 This command will deploy all the Docker containers needed to use the platform, which mainly consists of Airflow as the orchestrator (made up of different containers to deploy all its functionality) and MLFlow as the Model/Experiment Registry. 
+
+Experiments could be orchestrated through Apache Airflow using DAGs. The recommended execution strategy consists of dynamically retrieving experiment definitions from an external Git-based repository, executing the defined workflows, and optionally removing the downloaded repository afterwards. This approach ensures that the most recent version of the experimental code is always used while avoiding unnecessary storage consumption within the platform.
 
 Airflow Docker image is custom, so some additional dependecies are installed, like Git or MLFlow.
 
