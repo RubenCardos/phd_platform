@@ -4,6 +4,7 @@
 
 1. [Project Structure](#project-structure)
 2. [How to use](#how-to-use)
+3. [Comparison with other MLOps platforms](#other-mlops-platforms)
 
 ## Project Structure
 The repository is organized as follows:
@@ -54,11 +55,14 @@ The platform orchestrates the following services using Docker Compose:
 
 ## How To Use
 
-To deploy the platform, execute the following command in the same directory atTo deploy the platform, run the command shown below where the compose.yml file is located.
+To deploy the platform, execute the following command where the compose.yml file is located.
 
 ```bash
 docker-compose up --build -d
 ```
+
+If when execute the docker compose command the return is *no configuration file provided: not found* probabily path is not correct , execute *cd src* command to change path to *src* directory, where compose.yml file is located
+
 This command reads the Compose specification and instantiates all required services, creating and orchestrating the corresponding containers, parameter description:
 
 * --build: Rebuild the Docker images being used in the compose.yml file
@@ -109,3 +113,14 @@ For this examples its recommends to create two pools in airflow, to create a poo
 * experiment_1_pool wito two sloots
 * experiment_2_pool with six sloots
 
+## Comparision with other MLOps Platforms
+
+| Feature                          | Proposed Platform | Kubeflow   | MLflow Recipes |
+|----------------------------------|------------------|------------|----------------|
+| Lightweight deployment           | Yes              | No         | Yes            |
+| Combinatorial experiment support | Yes              | Partially  | No             |
+| Parallel experimentation (research-oriented) | Yes | Partially | No |
+| Reproducibility (end-to-end)     | Yes              | Yes        | Partially      |
+| Domain-specific                  | No               | No         | No             |
+
+Unlike general-purpose MLOps platforms, the proposed system is specifically designed to support research-oriented experimentation involving combinatorial parameter spaces and systematic multi-run evaluation.
