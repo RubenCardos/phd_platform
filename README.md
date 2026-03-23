@@ -124,3 +124,9 @@ For this examples its recommends to create two pools in airflow, to create a poo
 | Domain-specific                  | No               | No         | No             |
 
 Unlike general-purpose MLOps platforms, the proposed system is specifically designed to support research-oriented experimentation involving combinatorial parameter spaces and systematic multi-run evaluation.
+
+Other MLops platform: 
+
+* *Kubeflow* is an MLOps platform for scalable machine learning workflows on Kubernetes, supporting pipelines, distributed training, and cloud integration. However, it requires a Kubernetes cluster and significant configuration, which can add complexity in lightweight research environments.  \\
+
+* *MLflow Recipes* (previously known as MLflow Pipelines) focus on structuring machine learning workflows and tracking experiments, provides experiment logging, model versioning, and reproducibility support \cite{zaharia2018accelerating}, but mainly offers templates and tracking, relying on external tools for orchestration and large-scale execution.

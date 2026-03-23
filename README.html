@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Automated Experimentation Platform</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <h1 id="automated-experimentation-platform">Automated Experimentation Platform</h1>
+<h2 id="table-of-contents">Table of contents</h2>
+<ol>
+<li><a href="#project-structure">Project Structure</a></li>
+<li><a href="#how-to-use">How to use</a></li>
+<li><a href="#other-mlops-platforms">Comparison with other MLOps platforms</a></li>
+</ol>
+<h2 id="project-structure">Project Structure</h2>
+<p>The repository is organized as follows:</p>
+<pre><code class="language-bash">src
+├── compose.yml  <span class="hljs-comment"># Docker Compose file to orchestrate the complete deployment of the platform</span>
+├── mlflow/
+    ├── Dockerfile <span class="hljs-comment"># Dockerfile to build amd Docker image for MLFlow server</span>
+    ├── requirements.txt   <span class="hljs-comment"># Requirements file for MLFLow server</span>
+    └── Dockerfile   <span class="hljs-comment"># Dockerfile to create custom Airflow image, yo include git and all requeriments</span>
+├── License  <span class="hljs-comment"># License File, MIT license</span>
+├── README.md  <span class="hljs-comment"># Readme file </span>
+└── gitignore.yml <span class="hljs-comment"># Git ignore file, to ignore some non-needed file in the reposotory</span>
+</code></pre>
+<h2 id="platform-architecture">Platform Architecture</h2>
+<p>Following image presents a schematic representation of the platform architecture and illustrates the interaction between modules within the automated experimentation ecosystem.</p>
+<p><img src="file:///c:\Users\Rubén\Downloads\DEV\softwarex\phd_platform\doc\images\PlatformArq.PNG" alt="Graphical representation of the platform architecture"></p>
+<h3 id="services-orchestrated-with-docker-compose">Services orchestrated with Docker Compose</h3>
+<p>The platform orchestrates the following services using Docker Compose:</p>
+<ol>
+<li><strong>Airflow</strong>:</li>
+</ol>
+<ul>
+<li>Description: A workflow orchestrator for complex workflows, it is a custom image with several dependencies already included, such as Git and MLFlow.</li>
+<li>Exposed Port: 8080</li>
+<li>Build: Built from the Dockerfile located in the root directory.</li>
+<li>Dependencies: This service consists of multiple services/containers, which make up the various common modules of Airflow:
+<ul>
+<li><strong>postgres</strong>: Database container that stores metadata, DAG states, and task information.</li>
+<li><strong>flower</strong>: Provides a web-based monitoring tool for Celery (as integrated library within Airflow) workers and task queues.</li>
+<li><strong>redis</strong>: Acts as a message broker for Celery (for Celery Executor), enabling communication between scheduler and workers.</li>
+<li><strong>airflow-webserver</strong>: Hosts the web UI where users can monitor, trigger, and manage workflows (DAGs).</li>
+<li><strong>airflow-scheduler</strong>: Responsible for scheduling tasks and triggering DAG runs based on defined intervals and dependencies.</li>
+<li><strong>airflow-worker</strong>: Executes the tasks assigned by the scheduler</li>
+<li><strong>airflow-triggerer</strong>: Handles deferred and asynchronous tasks, improving efficiency for long-running operations.</li>
+<li><strong>airflow-init</strong>: Initializes the environment, sets up the database, and creates the initial user.</li>
+<li><strong>airflow-cli</strong>: A lightweight utility container used to run Airflow CLI commands interactively or on demand, sharing the same environment as other Airflow services.</li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li><strong>Mlflow</strong>:</li>
+</ol>
+<ul>
+<li>Description: Experiment tracking and evaluation store. Allos to easily stored results and compare results</li>
+<li>Exposed Port: 5050</li>
+<li>Build: Built from the Dockerfile located in the /mlflow directory.</li>
+</ul>
+<h2 id="how-to-use">How To Use</h2>
+<p>To deploy the platform, execute the following command where the compose.yml file is located.</p>
+<pre><code class="language-bash">docker-compose up --build -d
+</code></pre>
+<p>If when execute the docker compose command the return is <em>no configuration file provided: not found</em> probabily path is not correct , execute <em>cd src</em> command to change path to <em>src</em> directory, where compose.yml file is located</p>
+<p>This command reads the Compose specification and instantiates all required services, creating and orchestrating the corresponding containers, parameter description:</p>
+<ul>
+<li>--build: Rebuild the Docker images being used in the compose.yml file</li>
+<li>-d: Unattended mode, the terminal is not locked using the standard Eocker exit</li>
+</ul>
+<p>This command will deploy all the Docker containers needed to use the platform, which mainly consists of Airflow as the orchestrator (made up of different containers to deploy all its functionality) and MLFlow as the Model/Experiment Registry.</p>
+<p>Experiments could be orchestrated through Apache Airflow using DAGs. The recommended execution strategy consists of dynamically retrieving experiment definitions from an external Git-based repository, executing the defined workflows, and optionally removing the downloaded repository afterwards. This approach ensures that the most recent version of the experimental code is always used while avoiding unnecessary storage consumption within the platform.</p>
+<p>Airflow Docker image is custom, so some additional dependecies are installed, like Git or MLFlow.</p>
+<p>After the platform is deployed, four new folder will appear:</p>
+<ul>
+<li><strong>config</strong>: For override Airflow confing, it is not recommended to use it.</li>
+<li><strong>dags</strong>: For Aiflow dags, <strong>put all your dags and Python Scripts here</strong>. (1)</li>
+<li><strong>logs</strong>: Log generated by Airflow.</li>
+<li><strong>plugins</strong>: For Airflow pluggins, it is not recommended to use it.</li>
+</ul>
+<p>Once the platform is deployed, the neeeded Docker containers are created, the following image shown the containers eployed</p>
+<p><img src="file:///c:\Users\Rubén\Downloads\DEV\softwarex\phd_platform\doc\images\Docker_Plataforma.PNG" alt="Graphical representation of the platform architecture"></p>
+<h3 id="airflow">Airflow</h3>
+<p>To use airflow:</p>
+<ul>
+<li>User interface could be open at <a href="http://localhost:8080/">http://localhost:8080/</a> and login with user/password airflow/airflow</li>
+<li>Dags should be added at dags folder, create when docker compose up cammands was executed</li>
+<li>For more info about how to create dags check Airflow documentation: <a href="https://airflow.apache.org/docs/apache-airflow/stable/tutorial/index.html">https://airflow.apache.org/docs/apache-airflow/stable/tutorial/index.html</a></li>
+</ul>
+<h3 id="mlflow">MLFlow</h3>
+<p>To user MLFlow:</p>
+<ul>
+<li>User interface could be open at <a href="http://127.0.0.1:5000/">http://127.0.0.1:5000/</a> ,no login its requeired</li>
+<li>To create experiments and runs use the MLFLow Python SDK</li>
+</ul>
+<h3 id="examples-of-use">Examples of use</h3>
+<p>If you want examples of real-world use of the platform, such as orchestrating an experiment in a workflow/DAGs, Python scripts, and connecting to MLFlow to send and save results, download the following repository <a href="https://github.com/RubenCardos/phd_workflows">https://github.com/RubenCardos/phd_workflows</a> in the “DAGs” (1) directory, which contains several examples of real-world use of the platform.</p>
+<ul>
+<li>elastic_patterns_experiment_1.py : Experiment to classify handwritten numbers, MNIST dataset, and storage results in MLFlow.</li>
+<li>elastic_patterns_experiment_1_versioning.py : Same as experiment 1, but using a code repository to storage the source code of experiment since the platform have a source version control (git) tool.</li>
+<li>elastic_patterns_experiment_2: Experiment to classify brest cancer samples and storage results to MLFlow</li>
+</ul>
+<p>For this examples its recommends to create two pools in airflow, to create a pool in Airflow UI goto Admin &gt; Pools and add a new pool, recommended pools are:</p>
+<ul>
+<li>experiment_1_pool wito two sloots</li>
+<li>experiment_2_pool with six sloots</li>
+</ul>
+<h2 id="comparision-with-other-mlops-platforms">Comparision with other MLOps Platforms</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Proposed Platform</th>
+<th>Kubeflow</th>
+<th>MLflow Recipes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lightweight deployment</td>
+<td>Yes</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Combinatorial experiment support</td>
+<td>Yes</td>
+<td>Partially</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Parallel experimentation (research-oriented)</td>
+<td>Yes</td>
+<td>Partially</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Reproducibility (end-to-end)</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Partially</td>
+</tr>
+<tr>
+<td>Domain-specific</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Unlike general-purpose MLOps platforms, the proposed system is specifically designed to support research-oriented experimentation involving combinatorial parameter spaces and systematic multi-run evaluation.</p>
+
+            
+            
+        </body>
+        </html>
