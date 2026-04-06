@@ -173,6 +173,19 @@ In contrast to these alternatives, Apache Airflow offers a balanced combination 
 
 #### MLflow
 
+MLflow is an open-source platform designed to manage the machine learning lifecycle, including experiment tracking, parameter logging, model versioning, and artefact storage. Its modular design and lightweight deployment make it particularly suitable for integration into custom MLOps infrastructures.
+
+Alternative tools in this space include:
+
+- *Weights & Biases (W&B)*: provides a rich user interface, real-time visualisation, and collaborative features. However, it is primarily offered as a cloud-based service, which may introduce constraints related to data governance, reproducibility, and dependency on external infrastructure.
+
+- *Neptune.ai*: offers advanced experiment tracking and metadata management, with strong support for collaboration and monitoring. Similar to W&B, it relies heavily on a hosted platform, making it less suitable for fully self-contained and reproducible environments. Neptune AI has recently been acquired by OpenAI, so its future is not guaranteed in the near future.
+  
+- *Sacred* is a lightweight experiment configuration and tracking framework that emphasises reproducibility. While flexible, it lacks integrated model registry capabilities and does not provide a unified interface for large-scale experiment analysis.
+
+- *TensorBoard* is widely used for visualising training metrics, particularly within the TensorFlow ecosystem. However, it is primarily a visualisation tool and does not offer comprehensive experiment management, parameter tracking, or model versioning.
+
+Compared to these alternatives, MLflow provides a self-hosted, framework-agnostic, and modular solution that integrates seamlessly with existing workflows. In the proposed platform, MLflow is not only used for experiment tracking but also acts as a centralised repository of experimental knowledge, where parameters, metrics, and artefacts are systematically stored and queried. This capability is particularly relevant in scenarios involving combinatorial experimentation, where large numbers of runs must be organised, filtered, and compared in a structured manner.
 
 ## Prerequisites
 
