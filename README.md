@@ -2,11 +2,22 @@
 
 ## Table of contents
 
-1. [Project Structure](#project-structure)
-2. [How to use](#how-to-use)
-3. [Other MLOps platforms](#other-mlops-platforms)
-4. [Prerequisites](#rrerequisites)
-5. [End-to-end real case scenario](#e2e-real-case-scenario)
+- [Automated Experimentation Platform](#automated-experimentation-platform)
+  - [Table of contents](#table-of-contents)
+  - [Project Structure](#project-structure)
+  - [Platform Architecture](#platform-architecture)
+    - [Services orchestrated with Docker Compose](#services-orchestrated-with-docker-compose)
+  - [How To Use](#how-to-use)
+    - [Airflow](#airflow)
+    - [MLFlow](#mlflow)
+    - [Examples of use](#examples-of-use)
+  - [Other MLOps platforms](#other-mlops-platforms)
+    - [Comparison with other platforms](#comparison-with-other-platforms)
+    - [Comparison of other Workflow Orchestration Tools](#comparison-of-other-workflow-orchestration-tools)
+      - [Airflow](#airflow-1)
+      - [MLflow](#mlflow-1)
+  - [Prerequisites](#prerequisites)
+  - [End-to-end real case scenario](#end-to-end-real-case-scenario)
 
 ## Project Structure
 The repository is organized as follows:
@@ -115,7 +126,13 @@ For this examples its recommends to create two pools in airflow, to create a poo
 * experiment_1_pool with two sloots
 * experiment_2_pool with six sloots
 
-## Comparision with other MLOps Platforms
+## Other MLOps platforms
+
+### Comparison with other platforms
+
+A key distinction of the proposed platform is the explicit separation between pipeline execution and experiment execution. While most MLOps frameworks focus on pipeline orchestration, the proposed system introduces a native experimental parallelism model, where multiple configurations are executed as independent, comparable units.
+
+MLflow is not only used for tracking, but as a structured experiment database, where parameterised runs can be grouped, filtered, and analysed without additional tooling.
 
 | Feature                          | Proposed Platform | Kubeflow   | MLflow Recipes |
 |----------------------------------|------------------|------------|----------------|
@@ -123,15 +140,39 @@ For this examples its recommends to create two pools in airflow, to create a poo
 | Combinatorial experiment support | Yes              | Partially  | No             |
 | Parallel experimentation (research-oriented) | Yes | Partially | No |
 | Reproducibility (end-to-end)     | Yes              | Yes        | Partially      |
+| Experiment tracking       | Yes  | Partial  | Yes   |
+| Infrastructure requirements                 | Low     | High (K8s)| Low           |
 | Domain-specific                  | No               | No         | No             |
 
 Unlike general-purpose MLOps platforms, the proposed system is specifically designed to support research-oriented experimentation involving combinatorial parameter spaces and systematic multi-run evaluation.
 
 Other MLops platform: 
 
-* *Kubeflow* is an MLOps platform for scalable machine learning workflows on Kubernetes, supporting pipelines, distributed training, and cloud integration. However, it requires a Kubernetes cluster and significant configuration, which can add complexity in lightweight research environments.  \\
+* *Kubeflow* is an MLOps platform for scalable machine learning workflows on Kubernetes, supporting pipelines, distributed training, and cloud integration. However, it requires a Kubernetes cluster and significant configuration, which can add complexity in lightweight research environments. Kubeflow provides strong support for pipeline parallelism and scalable execution on Kubernetes, but it does not natively support systematic combinatorial experiment generation. Implementing this requires custom logic on top of pipelines, making it less suitable for structured research experimentation.
 
-* *MLflow Recipes* (previously known as MLflow Pipelines) focus on structuring machine learning workflows and tracking experiments, provides experiment logging, model versioning, and reproducibility support \cite{zaharia2018accelerating}, but mainly offers templates and tracking, relying on external tools for orchestration and large-scale execution.
+* *MLflow Recipes* (previously known as MLflow Pipelines) focus on structuring machine learning workflows and tracking experiments, provides experiment logging, model versioning, and reproducibility support, but mainly offers templates and tracking, relying on external tools for orchestration and large-scale execution. MLflow Recipes focus on standardizing ML workflows and tracking experiments, but lack on orchestration capabilities, parallel execution or combinatorial experiment generation.
+
+Unlike existing MLOps platforms, which primarily focus on pipeline orchestration and production deployment, the proposed platform is explicitly designed for systematic experimental evaluation in research contexts. Its main contribution lies in enabling automated combinatorial experiment generation and native experimental parallelism, where multiple configurations are executed, tracked, and compared as independent units. This approach addresses a gap in current MLOps ecosystems, where experimentation is often treated as a secondary concern rather than a first-class concept.
+
+### Comparison of other Workflow Orchestration Tools
+
+#### Airflow
+
+Apache Airflow is a widely adopted workflow orchestration framework based on Directed Acyclic Graphs (DAGs), enabling explicit definition, scheduling, and monitoring of complex pipelines. Its flexibility and extensibility make it particularly suitable for structuring reproducible machine learning workflows.
+
+Several alternative orchestration tools exist, each offering different trade-offs:
+
+- *Prefect*, provides a more modern and user-friendly API compared to Airflow, with improved handling of dynamic workflows and failure states. However, its ecosystem is less mature, and it is more tightly coupled to its own execution model, which may limit portability in highly controlled research environments.
+  
+- *Luigi*, developed by Spotify, offers a simpler pipeline abstraction with strong dependency management. Nevertheless, it lacks advanced scheduling capabilities and native support for distributed execution, making it less suitable for parallel experimentation at scale.
+  
+- *Dagster*, introduces a software-defined asset paradigm and strong typing for pipelines, improving observability and maintainability. However, its abstraction model introduces additional complexity and is less aligned with the lightweight, script-based experimentation approach adopted in this work.
+
+
+In contrast to these alternatives, Apache Airflow offers a balanced combination of maturity, flexibility, and infrastructure independence, making it particularly suitable for research-oriented experimentation. Its DAG-based model allows explicit control over execution logic, while features such as task parallelism, execution pools, and scheduling enable controlled concurrent execution of multiple experimental configurations. These characteristics align closely with the requirements of systematic and reproducible experimentation.
+
+#### MLflow
+
 
 ## Prerequisites
 
